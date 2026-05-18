@@ -128,7 +128,7 @@ Example — simple bisque fire:
 |---|---|---|
 | 0 | 20 | Room temp start |
 | 120 | 600 | 2hr ramp up |
-| 150 | 600 | 30min hold |
+| 1 | 980 | fast as possible to 980 |
 | 330 | 100 | 3hr ramp down |
 
 A default schedule is pre-loaded. You can edit it in the browser and save it to the device without reflashing.
