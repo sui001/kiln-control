@@ -55,7 +55,7 @@
 
 // ─── CONFIG ───────────────────────────────────────────────────────────────────
 
-#define VERSION         "1.5"
+#define VERSION         "1.6"
 /*
  * v1.5 changes (see top of file for full v1.4 history):
  *   - Bug fix: graph stopped reflecting edits until you hit Save.
@@ -72,9 +72,16 @@
  *     deliberately loose, not tight. Noted, not built.
  */
 
-// >>> FILL THESE IN BEFORE FLASHING — do not commit real values <<<
-#define WIFI_SSID       "YOUR_SSID"
-#define WIFI_PASSWORD   "YOUR_PASSWORD"
+// WiFi credentials live in secrets.h beside this file (gitignored), as
+//   #define WIFI_SSID     "..."
+//   #define WIFI_PASSWORD "..."
+// Placeholders below are only used if secrets.h is missing.
+#if __has_include("secrets.h")
+  #include "secrets.h"
+#else
+  #define WIFI_SSID       "YOUR_SSID"
+  #define WIFI_PASSWORD   "YOUR_PASSWORD"
+#endif
 
 #define MAX_SCK_PIN     36
 #define MAX_SO_PIN      38
@@ -86,7 +93,8 @@
 #define TFT_MOSI        4
 #define TFT_SCK         5
 
-#define SSR_PIN_RESERVED 39   // not used yet — reserved for Step 3
+#define SSR_PIN          39   // SSR control input (+). SSR (-) to GND.
+#define SSR_TEST_TIMEOUT_MS  60000UL  // manual "ssr on" auto-offs after this
 
 #define READ_INTERVAL_MS    500
 #define GRAPH_HISTORY_LEN   120   // TFT's own rolling graph — unchanged, still ~60s window
@@ -128,6 +136,18 @@ float currentSetpoint    = PLACEHOLDER_SETPOINT;
 bool  hasFault            = false;
 String faultDetail        = "";
 unsigned long readCount   = 0;
+
+// Median-of-5 spike filter: glitch reads (seen at 7-24 C against a steady
+// 26 C, errReg clean, sometimes two close together) are dropped rather than
+// fed onward. Costs ~1 s of lag at 500 ms reads, irrelevant for a kiln.
+#define MED_N 5
+float medBuf[MED_N] = {NAN, NAN, NAN, NAN, NAN};
+int   medIdx    = 0;
+
+// SSR manual test state (v1.6). Schedule does not drive this yet.
+bool ssrOn = false;
+unsigned long ssrOnSinceMs = 0;
+String serialLine = "";
 
 float graphHistory[GRAPH_HISTORY_LEN];
 int graphIndex   = 0;
@@ -324,6 +344,50 @@ void drawStats(float temp, float setpoint, bool fault) {
   tft.print(delta >= 0 ? "+" : "");
   tft.print(delta, 1);
   tft.print(" C");
+}
+
+float medianFilter(float v) {
+  medBuf[medIdx] = v;
+  medIdx = (medIdx + 1) % MED_N;
+  float t[MED_N];
+  int n = 0;
+  for (int i = 0; i < MED_N; i++) if (!isnan(medBuf[i])) t[n++] = medBuf[i];
+  for (int i = 1; i < n; i++) {            // insertion sort, n <= 5
+    float x = t[i]; int j = i - 1;
+    while (j >= 0 && t[j] > x) { t[j + 1] = t[j]; j--; }
+    t[j + 1] = x;
+  }
+  return t[n / 2];
+}
+
+void drawSsrStatus() {
+  tft.fillRect(8, 205, 200, 20, BG_COLOR);
+  tft.setTextSize(2);
+  tft.setCursor(8, 205);
+  tft.setTextColor(ssrOn ? ERROR_COLOR : OK_COLOR);
+  tft.print(ssrOn ? "SSR ON" : "SSR off");
+}
+
+void setSsr(bool on) {
+  ssrOn = on;
+  digitalWrite(SSR_PIN, on ? HIGH : LOW);
+  if (on) ssrOnSinceMs = millis();
+  Serial.printf("[ssr] %s\n", on ? "ON" : "OFF");
+  drawSsrStatus();
+}
+
+void handleSerial() {
+  while (Serial.available()) {
+    char ch = Serial.read();
+    if (ch == '\r') continue;
+    if (ch != '\n') { if (serialLine.length() < 32) serialLine += ch; continue; }
+    serialLine.trim();
+    serialLine.toLowerCase();
+    if (serialLine == "ssr on")       setSsr(true);
+    else if (serialLine == "ssr off") setSsr(false);
+    else if (serialLine.length())     Serial.println("[cmd] unknown. Try: ssr on | ssr off");
+    serialLine = "";
+  }
 }
 
 String getFaultDetail() {
@@ -833,8 +897,12 @@ void connectWiFi() {
 void setup() {
   Serial.begin(115200);
   delay(1500);
-  Serial.println("\n=== Kiln sensor + display + dashboard + schedule (merged) ===");
-  Serial.printf("Version: %s\n", VERSION);
+  Serial.println("=== gen3d kiln controller v" VERSION " ===");
+  Serial.println("Kiln thermocouple + TFT + web dashboard, manual SSR test on GPIO39");
+  Serial.println("https://github.com/sui001/kiln-control/tree/main/kiln_sensor_display_v1_5");
+
+  pinMode(SSR_PIN, OUTPUT);
+  digitalWrite(SSR_PIN, LOW);   // SSR off before anything else can happen
 
   tftSPI.begin(TFT_SCK, -1, TFT_MOSI, TFT_CS);
   tft.begin();
@@ -904,6 +972,8 @@ void setup() {
 
   server.begin();
 
+  drawSsrStatus();
+  Serial.println("Serial commands: ssr on | ssr off  (auto-off after 60 s)");
   Serial.println("=== Setup complete ===\n");
 }
 
@@ -911,6 +981,12 @@ void setup() {
 
 void loop() {
   unsigned long now = millis();
+
+  handleSerial();
+  if (ssrOn && millis() - ssrOnSinceMs >= SSR_TEST_TIMEOUT_MS) {
+    Serial.println("[ssr] test timeout");
+    setSsr(false);
+  }
 
   if (now - lastWifiCheckMs >= WIFI_RECONNECT_CHECK_MS) {
     lastWifiCheckMs = now;
@@ -936,7 +1012,7 @@ void loop() {
 
     Serial.printf("  [raw] internal=%.2f  external=%.2f  errReg=0b%s\n",
       thermocouple.readInternal(),
-      thermocouple.readCelsius(),
+      reading,
       String(thermocouple.readError(), BIN).c_str());
 
     if (isnan(reading)) {
@@ -949,7 +1025,7 @@ void loop() {
       pushGraphPoint(currentTemp);
     } else {
       hasFault = false;
-      currentTemp = reading;
+      currentTemp = medianFilter(reading);
       pushGraphPoint(currentTemp);
       Serial.printf("Read #%lu: %.2f C\n", readCount, currentTemp);
     }
