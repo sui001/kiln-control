@@ -1,0 +1,83 @@
+<svg viewBox="0 0 800 470" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial, sans-serif">
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<rect x="0" y="0" width="800" height="470" fill="#ffffff"/>
+<style>
+  .t{font-size:14px;font-weight:600;fill:#111}
+  .s{font-size:12px;fill:#222}
+  .mod{stroke:#555;stroke-width:0.8}
+</style>
+<text class="t" x="16" y="28">Kiln controller perfboard: preview layout (module sizes assumed)</text>
+
+<rect x="290" y="100" width="490" height="210" rx="4" fill="#f6f1e4" stroke="#444" stroke-width="1" stroke-dasharray="6 4"/>
+<text class="s" x="780" y="326" text-anchor="end">perfboard 70 x 30 mm (7 px = 1 mm)</text>
+
+<rect class="mod" x="290" y="107" width="98" height="63" rx="4" fill="#d9d9d9"/>
+<text class="t" x="339" y="134" text-anchor="middle">Barrel jack</text><text class="s" x="339" y="152" text-anchor="middle">12 V in</text>
+<rect class="mod" x="395" y="116" width="22" height="18" rx="3" fill="#d9d9d9"/>
+<text class="s" x="406" y="112" text-anchor="middle">PTC</text>
+<circle class="mod" cx="446" cy="142" r="24" fill="#d9d9d9"/><text class="s" x="446" y="146" text-anchor="middle">470µF</text>
+<rect class="mod" x="297" y="191" width="154" height="112" rx="4" fill="#d9d9d9"/>
+<text class="t" x="374" y="243" text-anchor="middle">Buck 12→5 V</text><text class="s" x="374" y="261" text-anchor="middle">MP1584 / mini</text>
+<rect class="mod" x="455" y="208" width="14" height="14" rx="2" fill="#d9d9d9"/>
+<text class="s" x="462" y="238" text-anchor="middle">J1</text>
+
+<rect class="mod" x="482" y="149" width="160" height="126" rx="4" fill="#cfe2f7"/>
+<text class="t" x="562" y="222" text-anchor="middle">S3-Matrix</text><text class="s" x="562" y="240" text-anchor="middle">ESP32-S3</text>
+<text class="s" x="500" y="166" text-anchor="middle">5V</text><text class="s" x="518" y="166" text-anchor="middle">G</text><text class="s" x="536" y="166" text-anchor="middle">1</text><text class="s" x="554" y="166" text-anchor="middle">2</text><text class="s" x="572" y="166" text-anchor="middle">3</text><text class="s" x="590" y="166" text-anchor="middle">4</text><text class="s" x="608" y="166" text-anchor="middle">5</text>
+<text class="s" x="636" y="164" text-anchor="end">3V3</text><text class="s" x="636" y="184" text-anchor="end">36</text><text class="s" x="636" y="204" text-anchor="end">37</text><text class="s" x="636" y="224" text-anchor="end">38</text>
+<text class="s" x="488" y="266">G</text><text class="s" x="590" y="270" text-anchor="middle">39</text>
+
+<rect class="mod" x="493" y="107" width="126" height="18" rx="2" fill="#d9d9d9"/>
+<text class="s" x="556" y="96" text-anchor="middle">TFT header (ribbon to screen)</text>
+<text class="s" x="500" y="120" text-anchor="middle">V</text><text class="s" x="518" y="120" text-anchor="middle">G</text><text class="s" x="536" y="120" text-anchor="middle">CS</text><text class="s" x="554" y="120" text-anchor="middle">RS</text><text class="s" x="572" y="120" text-anchor="middle">DC</text><text class="s" x="590" y="120" text-anchor="middle">MO</text><text class="s" x="608" y="120" text-anchor="middle">SK</text>
+
+<rect class="mod" x="648" y="114" width="126" height="182" rx="4" fill="#c9eee0"/>
+<text class="t" x="716" y="270" text-anchor="middle">MAX31855</text>
+<text class="s" x="654" y="164">VIN</text><text class="s" x="654" y="184">CLK</text><text class="s" x="654" y="204">CS</text><text class="s" x="654" y="224">DO</text><text class="s" x="654" y="244">GND</text>
+<rect class="mod" x="742" y="170" width="26" height="56" rx="2" fill="#d9d9d9"/>
+<text class="s" x="716" y="152" text-anchor="middle">T+ T−, 10nF</text>
+
+<rect class="mod" x="584" y="283" width="12" height="16" rx="2" fill="#d9d9d9"/>
+<text class="s" x="604" y="296">10k</text>
+
+<circle cx="402" cy="182" r="7" fill="none" stroke="#3b7a12" stroke-width="2.5"/>
+<text class="s" x="356" y="186" text-anchor="end">star</text>
+
+<rect class="mod" x="40" y="110" width="224" height="245" rx="4" fill="#fbe3bd"/>
+<text class="t" x="152" y="216" text-anchor="middle">ULN2003 module</text><text class="s" x="152" y="234" text-anchor="middle">off-board / overhanging</text>
+<circle cx="54" cy="124" r="4" fill="none" stroke="#555"/><circle cx="250" cy="124" r="4" fill="none" stroke="#555"/><circle cx="54" cy="341" r="4" fill="none" stroke="#555"/><circle cx="250" cy="341" r="4" fill="none" stroke="#555"/>
+<text class="s" x="258" y="274" text-anchor="end">+</text><text class="s" x="258" y="294" text-anchor="end">−</text><text class="s" x="258" y="334" text-anchor="end">IN1-3</text>
+<text class="s" x="80" y="348" text-anchor="middle">pin5</text><text class="s" x="130" y="348" text-anchor="middle">OUT1-3</text>
+
+<g fill="none" stroke-width="2.2" stroke-linejoin="round">
+<path d="M388 125H395" stroke="#d62828"/>
+<path d="M417 125H425V176H310V191" stroke="#d62828"/>
+<path d="M425 142H422" stroke="#d62828"/>
+<path d="M310 176H282V270H264" stroke="#d62828"/>
+<path d="M451 215H455M469 215H470V140H500V149M500 140V125" stroke="#e08a00"/>
+<path d="M642 160H648" stroke="#7a3fd1"/>
+<path d="M642 180H648M642 200H648M642 220H648" stroke="#1f6fd1"/>
+<path d="M536 125V149M554 125V149M572 125V149M590 125V149M608 125V149" stroke="#1f6fd1"/>
+<path d="M590 275V283M590 280H476V306H270V330H264" stroke="#1f6fd1"/>
+<path d="M518 125V149" stroke="#3b7a12"/>
+<path d="M388 155H402V175" stroke="#3b7a12"/>
+<path d="M340 191V182H395" stroke="#3b7a12"/>
+<path d="M446 166V172H409" stroke="#3b7a12"/>
+<path d="M395 186H276V290H264" stroke="#3b7a12"/>
+<path d="M482 262H462V186H409" stroke="#3b7a12"/>
+<path d="M648 240H646V300H456V190H409" stroke="#3b7a12"/>
+<path d="M80 355V400" stroke="#d62828" marker-end="url(#arrow)"/>
+<path d="M130 355V400" stroke="#3b7a12" marker-end="url(#arrow)"/>
+</g>
+<text class="s" x="80" y="420" text-anchor="middle">coil + loop</text><text class="s" x="80" y="436" text-anchor="middle">via lid switch</text>
+<text class="s" x="140" y="420">coil − loop</text>
+
+<g transform="translate(300,385)">
+<line x1="0" y1="0" x2="22" y2="0" stroke="#d62828" stroke-width="2.5"/><text class="s" x="28" y="4">12 V</text>
+<line x1="80" y1="0" x2="102" y2="0" stroke="#e08a00" stroke-width="2.5"/><text class="s" x="108" y="4">5 V</text>
+<line x1="150" y1="0" x2="172" y2="0" stroke="#7a3fd1" stroke-width="2.5"/><text class="s" x="178" y="4">3V3</text>
+<line x1="230" y1="0" x2="252" y2="0" stroke="#3b7a12" stroke-width="2.5"/><text class="s" x="258" y="4">GND: each its own wire to the star</text>
+<line x1="0" y1="26" x2="22" y2="26" stroke="#1f6fd1" stroke-width="2.5"/><text class="s" x="28" y="30">signal (GPIO)</text>
+<text class="s" x="0" y="56">J1 = 5 V jumper, pull when flashing over USB. 10k = GPIO39 pull-down, relays off at boot.</text>
+</g>
+</svg>
